@@ -15,7 +15,7 @@ def getEntropyFromQuantities(listOfInt):
 
     sumatory = sum(proportionsMultipliedByLog2)
 
-    log += ' + '.join([f'{proportions} * log_2({proportion})' for proportion in proportions]) + f'\n= {sumatory}'
+    log += ' + '.join([f'{round(proportion, 2)} * log_2({round(proportion, 2)})' for proportion in proportions]) + f'\n= {round(sumatory, 2)}'
     print(log)
     return -sumatory
 
@@ -27,7 +27,7 @@ def getEntropy(dataset):
 
 def informationGain(datasetDataFrame, attribute):
     totalEntropy = getEntropy(datasetDataFrame)
-    log = f'Gain(S, {attribute}) = E(S) - sum( |Sv| / |S| * E(Sv) )\n= {totalEntropy}'
+    log = f'Gain(S, {attribute}) = E(S) - sum( |Sv| / |S| * E(Sv) )\n= {round(totalEntropy, 2)}'
     values = datasetDataFrame[attribute].unique()
     
     summatory = 0
@@ -36,10 +36,10 @@ def informationGain(datasetDataFrame, attribute):
         entropy = getEntropy(datasetFilteredByValue)
         proportionOverTotal = len(datasetFilteredByValue) / len(datasetDataFrame)
         summatory += proportionOverTotal * entropy
-        log += f' - {proportionOverTotal} * {entropy}'
+        log += f' - {round(proportionOverTotal, 2)} * {round(entropy, 2)}'
     
     result = totalEntropy - summatory
-    log += f'\n= {result}'
+    log += f'\n= {round(result, 2)}'
     print(log)
     return result
 
