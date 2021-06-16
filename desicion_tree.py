@@ -92,13 +92,11 @@ def desicionTree(dataset, attributes):
 df = pd.read_csv('dataset.csv')
 pprint(df)
 
-# %%
 dt = desicionTree(df, list(df.columns)[:-1])
-pprint(dt)
-# %%
-assert(getEntropy(df) == 0.9402859586706311)
-assert(getInformationGain(df, 'Humidity') == 0.15183550136234159)
+assert(dt == ('Outlook',
+ [('Sunny', ('Humidity', [('High', ['No']), ('Normal', ['Yes'])])),
+  ('Overcast', ['Yes']),
+  ('Rainy', ('Windy', [(False, ['Yes']), (True, ['No'])]))]))
+# Page to test the output
+# https://planetcalc.com/8443/
 
-# %%
-
-# %%
