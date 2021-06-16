@@ -3,9 +3,11 @@ Se supone que la última columna del dataframe es la que se quiere clasificar
 Podría mejorarse en un futuro
 '''
 
-#%%
+# %%
+from pprint import pprint
 from math import log2
 import pandas as pd
+
 
 def getEntropyFromQuantities(listOfInt):
     log = f'E{tuple(listOfInt)} = '
@@ -15,9 +17,11 @@ def getEntropyFromQuantities(listOfInt):
 
     sumatory = sum(proportionsMultipliedByLog2)
 
-    log += ' + '.join([f'{round(proportion, 2)} * log_2({round(proportion, 2)})' for proportion in proportions]) + f'\n= {round(sumatory, 2)}'
+    log += ' + '.join([f'{round(proportion, 2)} * log_2({round(proportion, 2)})' for proportion in proportions]
+                      ) + f'\n= {round(sumatory, 2)}'
     print(log)
     return -sumatory
+
 
 def getEntropy(dataset):
     classificationColumn = dataset.iloc[:, -1:]
@@ -25,23 +29,26 @@ def getEntropy(dataset):
 
     return getEntropyFromQuantities(list(valueCounts.values))
 
+
 def getInformationGain(datasetDataFrame, attribute):
     totalEntropy = getEntropy(datasetDataFrame)
     log = f'Gain(S, {attribute}) = E(S) - sum( |Sv| / |S| * E(Sv) )\n= {round(totalEntropy, 2)}'
     values = datasetDataFrame[attribute].unique()
-    
+
     summatory = 0
     for value in values:
         datasetFilteredByValue = datasetDataFrame[datasetDataFrame[attribute] == value]
         entropy = getEntropy(datasetFilteredByValue)
-        proportionOverTotal = len(datasetFilteredByValue) / len(datasetDataFrame)
+        proportionOverTotal = len(
+            datasetFilteredByValue) / len(datasetDataFrame)
         summatory += proportionOverTotal * entropy
         log += f' - {round(proportionOverTotal, 2)} * {round(entropy, 2)}'
-    
+
     result = totalEntropy - summatory
     log += f'\n= {round(result, 2)}'
     print(log)
     return result
+
 
 def desicionTree(dataset, attributes):
     '''
@@ -60,12 +67,14 @@ def desicionTree(dataset, attributes):
         if informationGain > maximumInformationGain:
             maximumInformationGain = informationGain
             bestAttribute = attribute
-    
+
     # Values of the attribute, edges of the tree
     values = list(dataset[bestAttribute].unique())
-    nextDatasets = [dataset[dataset[bestAttribute] == value] for value in values]
+    nextDatasets = [dataset[dataset[bestAttribute] == value].drop(columns = bestAttribute)
+                    for value in values]
 
-    nextAttributes = [attribute for attribute in attributes if attribute != bestAttribute]
+    nextAttributes = [
+        attribute for attribute in attributes if attribute != bestAttribute]
 
     nextDesicionTrees = []
     for nextDataset in nextDatasets:
@@ -79,16 +88,17 @@ def desicionTree(dataset, attributes):
     return (bestAttribute, list(zip(values, nextDesicionTrees)))
 
 
-#%%
-from pprint import pprint
+# %%
 df = pd.read_csv('dataset.csv')
 pprint(df)
 
-#%%
+# %%
 dt = desicionTree(df, list(df.columns)[:-1])
 pprint(dt)
-#%%
+# %%
 assert(getEntropy(df) == 0.9402859586706311)
 assert(getInformationGain(df, 'Humidity') == 0.15183550136234159)
+
+# %%
 
 # %%
