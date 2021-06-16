@@ -49,7 +49,9 @@ def desicionTree(dataset, attributes):
     (node, [(edge, tree), ...])
     '''
     if not attributes:
-        return 'Out of attribures'
+        classificationColumn = dataset.iloc[:, -1:]
+        valueCounts = classificationColumn.value_counts()
+        return dict(valueCounts)
 
     maximumInformationGain = -9999
     for attribute in attributes:
@@ -66,7 +68,7 @@ def desicionTree(dataset, attributes):
     nextAttributes = [attribute for attribute in attributes if attribute != bestAttribute]
 
     nextDesicionTrees = []
-    for value, nextDataset in zip(values, nextDatasets):
+    for nextDataset in nextDatasets:
         classifications = list(nextDataset[nextDataset.columns[-1]].unique())
         if len(classifications) == 1:
             nextDesicionTrees.append(classifications)
@@ -74,17 +76,19 @@ def desicionTree(dataset, attributes):
             nextDesicionTree = desicionTree(nextDataset, nextAttributes)
             nextDesicionTrees.append(nextDesicionTree)
 
-    return (bestAttribute, nextDesicionTrees)
+    return (bestAttribute, list(zip(values, nextDesicionTrees)))
 
 
 #%%
+from pprint import pprint
 df = pd.read_csv('dataset.csv')
-print(df)
+pprint(df)
 
 #%%
 dt = desicionTree(df, list(df.columns)[:-1])
-from pprint import pprint
 pprint(dt)
 #%%
 assert(getEntropy(df) == 0.9402859586706311)
 assert(getInformationGain(df, 'Humidity') == 0.15183550136234159)
+
+# %%
